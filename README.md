@@ -1,8 +1,8 @@
-# Git LFS Locks
+# Unity Git Locks
 
 Provides an extensive Unity integration for Git LFS locks, which are are essentials when working in teams to prevent conflicts, especially on binary files.
 
-<img src=".docs\img\lockswindow.PNG" alt="Locks window" style="zoom:50%;" />
+<img src=".docs\img\lockswindow.PNG" alt="Locks window" width="50%"/>
 
 ## Philosophy
 
@@ -10,12 +10,14 @@ The plugin uses simple calls to the Git LFS locks commands, which means you have
 
 This tool is intended to be used by developers, designers and artists alike, providing a flexible, easy and safe way of working as a team.
 
+
 ## How to use
 
 ### Installation
 
 The easiest way is probably to add this repository as a package, either:
-• [Automatically](https://docs.unity3d.com/Manual/upm-ui-giturl.html)
+
+• [Automatically](https://docs.unity3d.com/Manual/upm-ui-giturl.html) (with url https://github.com/Tactical-Adventures/unity-git-locks.git)
 
 • Manually, by cloning this repository in your repository's Packages folder
 
@@ -35,13 +37,14 @@ You could in theory use the tool with the read-only mode enabled but it has not 
 The only thing you absolutely need to setup before use is your provider's (e.g. Github) username, so the tool knows that it's you.
 You have to input it in the Preferences window (`Edit/Preferences/Git Locks/Git host username`), which is also accessible through the "Git Locks" window.
 
-<img src=".docs\img\username.PNG" alt="Set Username" style="zoom:50%;" />
+<img src=".docs\img\username.PNG" alt="Set Username" width="50%" />
+
 
 ## Features
 
 ### Main window
 
-<img src=".docs\img\lockswindow.PNG" alt="Main locks window" style="zoom:50%;" />
+<img src=".docs\img\lockswindow.PNG" alt="Main locks window" width="50%" />
 
 Accessible through `Window/Tactical Adventures/Git Locks`, this window will show you :
 
@@ -56,7 +59,7 @@ Accessible through `Window/Tactical Adventures/Git Locks`, this window will show
 
 ### Contextual menus
 
-<img src=".docs\img\context_hierarchy.jpg" alt="Set Username" style="zoom:40%;" /><img src=".docs\img\context_project.jpg" alt="Set Username" style="zoom:50%;" />
+<img src=".docs\img\context_hierarchy.jpg" alt="Hierarchy" width="40%" /><img src=".docs\img\context_project.jpg" alt="Project" width="50%" />
 
 On a right-click, you can lock/unlock any file in the project window, and lock/unlock prefabs in the hierarchy window.
 
@@ -67,21 +70,21 @@ Multi-selection and folder selection are supported, provided that the files in t
 Lock icons are displayed on all locked files and folders in the Git locks, Project, and Hierarchy windows. They can be clicked to obtain information on their status and unlock them directly (if they are yours).
 
 All locks are color-coded :
-![](Editor\Textures\greenLock.png)**File locked by you**
+![](Editor\Textures\greenLock.png) **File locked by you**
 You’re safe working on it (don’t forget to unlock it when you’re done). Also displayed on a folder containing at least one of your locks.
 
-![](Editor\Textures\orangeLock.png)**File locked by someone else**
+![](Editor\Textures\orangeLock.png) **File locked by someone else**
 You shouldn’t modify it (if you need to you can ask the owner of the lock to release it, if he/she’s drinking coconut water in Miami for the next two months you could probably force the unlock in the Git Locks window). Also displayed on a folder containing at least one of someone else's locks.
 
-![](Editor\Textures\redLock.png)**File locked by someone else conflicting with your changes**
+![](Editor\Textures\redLock.png) **File locked by someone else conflicting with your changes**
 Someone has locked this file but you’ve made changes to it anyway which you will not be able to push (if you’re just testing things out it’s ok, but you’ll have to discard changes before you push)
 
-**![](Editor\Textures\mixedLock.png)Folder containing locks by you and someone else**
+![](Editor\Textures\mixedLock.png) **Folder containing locks by you and someone else**
 This folder contains both locks of yours and others.
 
 ### Preferences
 
-<img src=".docs\img\preferences.PNG" alt="Set Username" style="zoom:50%;" />
+<img src=".docs\img\preferences.PNG" alt="Set Username" width="50%" />
 
 Many options are available to customize your use of the tool:
 
@@ -99,6 +102,7 @@ Many options are available to customize your use of the tool:
 In the project window, you can use Ctrl + Maj + **L** or **U** to **L**ock/**U**nlock a file or selection of files.
 
 If you prefer having shortcuts to lock/unlock prefabs in the hierarchy, you can add some in `Edit / Shortcuts / “Main Menu/GameObject/Git LFS Lock” (or “Unlock”)`
+
 
 ## Misc
 
