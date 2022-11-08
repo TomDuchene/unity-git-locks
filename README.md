@@ -71,16 +71,21 @@ Multi-selection and folder selection are supported, provided that the files in t
 Lock icons are displayed on all locked files and folders in the Git locks, Project, and Hierarchy windows. They can be clicked to obtain information on their status and unlock them directly (if they are yours).
 
 All locks are color-coded :
+
 <img src="Editor\Textures\greenLock.png" alt="Lock" width="20"/>**File locked by you**
+
 You’re safe working on it (don’t forget to unlock it when you’re done). Also displayed on a folder containing at least one of your locks.
 
 <img src="Editor\Textures\orangeLock.png" alt="Lock" width="20"/>**File locked by someone else**
+
 You shouldn’t modify it (if you need to you can ask the owner of the lock to release it, if he/she’s drinking coconut water in Miami for the next two months you could probably force the unlock in the Git Locks window). Also displayed on a folder containing at least one of someone else's locks.
 
 <img src="Editor\Textures\redLock.png" alt="Lock" width="20"/>**File locked by someone else conflicting with your changes**
+
 Someone has locked this file but you’ve made changes to it anyway which you will not be able to push (if you’re just testing things out it’s ok, but you’ll have to discard changes before you push)
 
 <img src="Editor\Textures\mixedLock.png" alt="Lock" width="20"/>**Folder containing locks by you and someone else**
+
 This folder contains both locks of yours and others.
 
 ### Preferences
