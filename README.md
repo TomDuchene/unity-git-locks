@@ -24,6 +24,7 @@ The easiest way is probably to add this repository as a package, either:
 ### Repository configuration recommendations
 
 We recommend that you setup your repository to **not** set as read-only the files that haven't been locked:
+
 `git config lfs.setlockablereadonly false`
 
 This allows users to modify any file and only prevents them from pushing changes to a locked file. The tool displays (opt-out) warnings when modifying a file that has been locked by someone else.
@@ -70,16 +71,16 @@ Multi-selection and folder selection are supported, provided that the files in t
 Lock icons are displayed on all locked files and folders in the Git locks, Project, and Hierarchy windows. They can be clicked to obtain information on their status and unlock them directly (if they are yours).
 
 All locks are color-coded :
-![](Editor\Textures\greenLock.png) **File locked by you**
+<img src="Editor\Textures\greenLock.png" alt="Lock" width="20"/>**File locked by you**
 You’re safe working on it (don’t forget to unlock it when you’re done). Also displayed on a folder containing at least one of your locks.
 
-![](Editor\Textures\orangeLock.png) **File locked by someone else**
+<img src="Editor\Textures\orangeLock.png" alt="Lock" width="20"/>**File locked by someone else**
 You shouldn’t modify it (if you need to you can ask the owner of the lock to release it, if he/she’s drinking coconut water in Miami for the next two months you could probably force the unlock in the Git Locks window). Also displayed on a folder containing at least one of someone else's locks.
 
-![](Editor\Textures\redLock.png) **File locked by someone else conflicting with your changes**
+<img src="Editor\Textures\redLock.png" alt="Lock" width="20"/>**File locked by someone else conflicting with your changes**
 Someone has locked this file but you’ve made changes to it anyway which you will not be able to push (if you’re just testing things out it’s ok, but you’ll have to discard changes before you push)
 
-![](Editor\Textures\mixedLock.png) **Folder containing locks by you and someone else**
+<img src="Editor\Textures\mixedLock.png" alt="Lock" width="20"/>**Folder containing locks by you and someone else**
 This folder contains both locks of yours and others.
 
 ### Preferences
