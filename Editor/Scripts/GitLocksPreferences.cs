@@ -126,6 +126,16 @@ public class GitLocksPreferences : SettingsProvider
                 EditorPrefs.SetBool("warnIfFileHasBeenModifiedOnServer", warnIfFileHasBeenModifiedOnServer);
             }
 
+            if (EditorPrefs.GetBool("warnIfFileHasBeenModifiedOnServer"))
+            {
+                EditorGUI.BeginChangeCheck();
+                string branchesToCheck = EditorGUILayout.TextField(new GUIContent("Other branches to check (',' separated)"), EditorPrefs.GetString("gitLocksBranchesToCheck"));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    EditorPrefs.SetString("gitLocksBranchesToCheck", branchesToCheck);
+                }
+            }
+
             EditorGUI.BeginChangeCheck();
             bool notifyNewLocks = EditorGUILayout.ToggleLeft(new GUIContent("Notify when there are new locks and when launching Unity"), EditorPrefs.GetBool("notifyNewLocks"));
             if (EditorGUI.EndChangeCheck())
@@ -160,7 +170,13 @@ public class GitLocksPreferences : SettingsProvider
             if (EditorGUI.EndChangeCheck())
             {
                 EditorPrefs.SetBool("gitLocksDebugMode", debugMode);
-                GitLocksDisplay.RefreshLockIcons();
+            }
+
+            EditorGUI.BeginChangeCheck();
+            bool showForceButtons = EditorGUILayout.ToggleLeft(new GUIContent("Show Force buttons"), EditorPrefs.GetBool("gitLocksShowForceButtons"));
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorPrefs.SetBool("gitLocksShowForceButtons", debugMode);
             }
         }
 

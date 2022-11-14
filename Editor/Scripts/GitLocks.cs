@@ -85,6 +85,11 @@ public class GitLocks : ScriptableObject
             EditorPrefs.SetBool("gitLocksDebugMode", false);
         }
 
+        if (!EditorPrefs.HasKey("gitLocksShowForceButtons"))
+        {
+            EditorPrefs.SetBool("gitLocksShowForceButtons", false);
+        }
+
         conflictWarningIgnoreList = new List<string>();
 
         GetGitVersion();
@@ -793,29 +798,52 @@ public class GitLocks : ScriptableObject
 
         char[] splitter = { '\n' };
 
-        // Fetch
-        string currentBranch = ExecuteProcessTerminal("git", "rev-parse --abbrev-ref HEAD");
-        currentBranch = currentBranch.Split(splitter)[0];
-        ExecuteProcessTerminal("git", "git fetch origin "  + currentBranch);
+        // Construct list of branches to check
+        HashSet<string> branchesToCheck = new HashSet<string>();
 
-        // List all distant commits
-        string output = ExecuteProcessTerminal("git", "rev-list " + currentBranch + "..origin/" + currentBranch);
-        string[] lines = output.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-        List<string> commits = new List<string>(lines);
-
-        // Check all commits
-        foreach (string commit in commits)
+        // Add optional branches to check set in preferences
+        if (EditorPrefs.HasKey("gitLocksBranchesToCheck"))
         {
-            // Add all files in commit to the list
-            string filesOutput = ExecuteProcessTerminal("git", "diff-tree --no-commit-id --name-only -r " + commit);
-            string[] files = filesOutput.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
-            
-            foreach (string file in files)
+            string fullString = EditorPrefs.GetString("gitLocksBranchesToCheck");
+            string[] array = fullString.Split(',');
+            foreach (string branch in array)
             {
-                // Check that every file exists (sanity)
-                if (System.IO.File.Exists(file))
+                if(branch != string.Empty)
                 {
-                    modifiedOnServerFilesCache.Add(file);
+                    branchesToCheck.Add(branch);
+                }
+            }
+        }
+
+        // Add current branch name
+        string currentBranch = ExecuteProcessTerminal("git", "rev-parse --abbrev-ref HEAD");
+        currentBranch = currentBranch.Split(splitter)[0].Replace("\r", "");
+        branchesToCheck.Add(currentBranch);
+
+        foreach (string branch in branchesToCheck)
+        {
+            // Fetch
+            ExecuteProcessTerminal("git", "git fetch origin " + branch);
+
+            // List all distant commits
+            string output = ExecuteProcessTerminal("git", "rev-list " + currentBranch + "..origin/" + branch);
+            string[] lines = output.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+            List<string> commits = new List<string>(lines);
+
+            // Check all commits
+            foreach (string commit in commits)
+            {
+                // Add all files in commit to the list
+                string filesOutput = ExecuteProcessTerminal("git", "diff-tree --no-commit-id --name-only -r " + commit.Replace("\r", ""));
+                string[] files = filesOutput.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string file in files)
+                {
+                    // Check that every file exists (sanity)
+                    if (System.IO.File.Exists(file.Replace("\r", "")))
+                    {
+                        modifiedOnServerFilesCache.Add(file.Replace("\r", ""));
+                    }
                 }
             }
         }

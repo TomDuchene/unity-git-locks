@@ -16,7 +16,7 @@ public class GitLocksDisplay : EditorWindow
 
     // Interface sizes
     private static float unlockButtonWidth = 65;
-    //private static float forceUnlockButtonWidth = 95;
+    private static float forceUnlockButtonWidth = 95;
     private static float lockIconWidth = 18;
     private static float scrollbarWidth = 20; // In case the scoll view triggers
     private static float checkboxWidth = 30;
@@ -459,7 +459,8 @@ public class GitLocksDisplay : EditorWindow
         UnityEngine.Object lockedObj = lo.GetObjectReference();
         if (lockedObj != null)
         {
-            float totalOtherWidth = EditorGUIUtility.currentViewWidth /*- forceUnlockButtonWidth*/ - lockIconWidth - scrollbarWidth - checkboxWidth;
+            float totalOtherWidth = EditorGUIUtility.currentViewWidth - lockIconWidth - scrollbarWidth - checkboxWidth;
+            totalOtherWidth -= EditorPrefs.GetBool("gitLocksShowForceButtons") ? forceUnlockButtonWidth : 0;
             totalOtherWidth -= myLock ? unlockButtonWidth : 0;
             float othersWidth = totalOtherWidth / 3;
 
@@ -504,16 +505,16 @@ public class GitLocksDisplay : EditorWindow
                 }
             }
 
-            /*
-            if (GUILayout.Button("Force unlock"))
-            {
-                if (EditorUtility.DisplayDialog("Force unlock ?", "Are you sure you want to force the unlock ? It may mess with a teammate's work !", "Yes, I know the risks", "Cancel, I'm not sure"))
+            if (EditorPrefs.GetBool("gitLocksShowForceButtons")){
+                if (GUILayout.Button("Force unlock"))
                 {
-                    GitLocks.UnlockFile(lo.path, true);
-                    GitLocks.RefreshLocks();
+                    if (EditorUtility.DisplayDialog("Force unlock ?", "Are you sure you want to force the unlock ? It may mess with a teammate's work !", "Yes, I know the risks", "Cancel, I'm not sure"))
+                    {
+                        GitLocks.UnlockFile(lo.path, true);
+                        GitLocks.RefreshLocks();
+                    }
                 }
             }
-            */
 
             GUILayout.EndHorizontal();
         }

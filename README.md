@@ -97,9 +97,11 @@ Many options are available to customize your use of the tool:
 - **Max number of files grouped per request:** the bigger the number, the faster the overall locking/unlocking operation will be when processing dozens of files. If you go too high it might trigger the process timeout. Some users have errors where only one file can be processed at a time, it this case keep the value at 1
 - **Auto refresh toggle and time:** the refresh is done asynchronously, so you can set it pretty low if there are a lot of people working simultaneously. It is recommended to keep the auto refresh on.
 - **Notifications:** while not mandatory, most are really important for a smooth experience
+- **Other branches to check:** what branches to check in addition to the current one when verifying that the file you're about to lock hasn't been modified on the server. No spaces, comma separated.
 - **Number of my locks displayed:** used to show a minimum number of your own locks before the others'
 - **Colorblind mode:** changes all lock icons to have different shapes and a more inclusive color scheme
 - **Show debug logs:** show additional logs, especially the commands called
+- **Show Force buttons:** display additional Force Unlock buttons, which will probably work only if you have the rights to do so
 - **Git version and update button:** you'll need to update if the version is too old
 - **Setup credentials manager button:** helps some users configure their CLI to authenticate if their credentials manager is not set correctly
 
