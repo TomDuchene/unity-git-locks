@@ -66,6 +66,8 @@ On a right-click, you can lock/unlock any file in the project window, and lock/u
 
 Multi-selection and folder selection are supported, provided that the files in the selection are all lockable / all unlockable.
 
+In the project window, you can also show the file's git history, in a terminal (default) or in a browser (configurable through the settings).
+
 ### Lock icons
 
 Lock icons are displayed on all locked files and folders in the Git locks, Project, and Hierarchy windows. They can be clicked to obtain information on their status and unlock them directly (if they are yours).
@@ -102,6 +104,7 @@ Many options are available to customize your use of the tool:
 - **Colorblind mode:** changes all lock icons to have different shapes and a more inclusive color scheme
 - **Show debug logs:** show additional logs, especially the commands called
 - **Show Force buttons:** display additional Force Unlock buttons, which will probably work only if you have the rights to do so
+- **Show file history in browser:** Instead of showing the file history in a terminal, show it in your browser. You have to enter a URL corresponding to you host's format, for example "https://github.com/MyUserName/MyRepo/blob/$branch/$assetPath" (GitHub)
 - **Git version and update button:** you'll need to update if the version is too old
 - **Setup credentials manager button:** helps some users configure their CLI to authenticate if their credentials manager is not set correctly
 

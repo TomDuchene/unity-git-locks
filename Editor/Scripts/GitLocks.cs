@@ -117,7 +117,7 @@ public class GitLocks : ScriptableObject
 
         // Get the locks asynchronously
         currentlyRefreshing = true;
-        ExecuteNonBlockingProcessTerminal("git", "lfs locks --json"); 
+        ExecuteNonBlockingProcessTerminal("git", "lfs locks --json");
     }
 
     public static void RefreshCallback(string result)
@@ -206,7 +206,7 @@ public class GitLocks : ScriptableObject
             // Sort the locks to show mine first
             if (lockedObjectsCache.Count > 0)
             {
-                lockedObjectsCache.Sort(delegate(GitLocksObject a, GitLocksObject b)
+                lockedObjectsCache.Sort(delegate (GitLocksObject a, GitLocksObject b)
                 {
                     // ^ is exclusive OR, compare if only one is equal to the git username
                     if (a.IsMine() ^ b.IsMine())
@@ -488,10 +488,11 @@ public class GitLocks : ScriptableObject
     public static void LockFiles(List<string> paths)
     {
         // Logs
-        if(paths.Count > 1)
+        if (paths.Count > 1)
         {
             DebugLog("Trying to lock " + paths.Count + " files");
-        } else
+        }
+        else
         {
             DebugLog("Trying to lock " + paths[0]);
         }
@@ -499,7 +500,7 @@ public class GitLocks : ScriptableObject
         // Split into multiple requests if there are too many files (prevents triggering timeout)
         int numOfRequests = (int)Math.Ceiling((float)paths.Count / (float)EditorPrefs.GetInt("gitLocksMaxFilesNumPerRequest", 15));
         List<string> pathsStrings = new List<string>(new string[numOfRequests]);
-        for(int i = 0; i < paths.Count; i++)
+        for (int i = 0; i < paths.Count; i++)
         {
             string p = paths[i];
             // Optionally, check if the file we want to lock has been modified on the server
@@ -516,7 +517,7 @@ public class GitLocks : ScriptableObject
         }
 
         // Send each request
-        foreach(string pathsString in pathsStrings)
+        foreach (string pathsString in pathsStrings)
         {
             ExecuteProcessTerminalWithConsole("git", "lfs lock " + pathsString);
         }
@@ -808,7 +809,7 @@ public class GitLocks : ScriptableObject
             string[] array = fullString.Split(',');
             foreach (string branch in array)
             {
-                if(branch != string.Empty)
+                if (branch != string.Empty)
                 {
                     branchesToCheck.Add(branch);
                 }
@@ -816,8 +817,7 @@ public class GitLocks : ScriptableObject
         }
 
         // Add current branch name
-        string currentBranch = ExecuteProcessTerminal("git", "rev-parse --abbrev-ref HEAD");
-        currentBranch = currentBranch.Split(splitter)[0].Replace("\r", "");
+        string currentBranch = GetCurrentBranch();
         branchesToCheck.Add(currentBranch);
 
         foreach (string branch in branchesToCheck)
@@ -868,6 +868,14 @@ public class GitLocks : ScriptableObject
     public static bool IsEnabled()
     {
         return EditorPrefs.GetBool("gitLocksEnabled", false);
+    }
+
+    public static string GetCurrentBranch()
+    {
+        char[] splitter = { '\n' };
+        string currentBranch = ExecuteProcessTerminal("git", "rev-parse --abbrev-ref HEAD");
+        currentBranch = currentBranch.Split(splitter)[0].Replace("\r", "");
+        return currentBranch;
     }
 
     private static void Update()

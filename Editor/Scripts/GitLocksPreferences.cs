@@ -59,7 +59,7 @@ public class GitLocksPreferences : SettingsProvider
 
             if (GUILayout.Button("Go on github"))
             {
-                Application.OpenURL("https://github.com/");
+                UnityEngine.Application.OpenURL("https://github.com/");
             }
 
             EditorGUILayout.EndHorizontal();
@@ -180,13 +180,45 @@ public class GitLocksPreferences : SettingsProvider
             }
         }
 
-        GUILayout.Space(20);
+        GUILayout.Space(10);
 
         EditorGUI.indentLevel--;
         EditorGUIUtility.labelWidth = previousLabelWidth;
-        
+
+        // Misc
+        EditorGUILayout.LabelField("Misc", EditorStyles.boldLabel);
+
+        EditorGUIUtility.labelWidth = 250;
+        EditorGUI.indentLevel++;
+
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUI.BeginChangeCheck();
+        bool showHistoryInBrowser = EditorGUILayout.ToggleLeft(new GUIContent("Show file history in browser"), EditorPrefs.GetBool("gitLocksShowHistoryInBrowser"), GUILayout.Width(190));
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorPrefs.SetBool("gitLocksShowHistoryInBrowser", showHistoryInBrowser);
+        }
+
+        EditorGUI.BeginDisabledGroup(!showHistoryInBrowser);
+        EditorGUI.BeginChangeCheck();
+        string url = EditorGUILayout.TextField(EditorPrefs.GetString("gitLocksShowHistoryInBrowserUrl"));
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorPrefs.SetString("gitLocksShowHistoryInBrowserUrl", url);
+        }
+        EditorGUI.EndDisabledGroup();
+
+        EditorGUILayout.EndHorizontal();
+
+        GUILayout.Space(10);
+
+        EditorGUI.indentLevel--;
+        EditorGUIUtility.labelWidth = previousLabelWidth;
+
+        // Git config and troubleshooting
         EditorGUILayout.LabelField("Git config and troubleshooting", EditorStyles.boldLabel);
-        
+
         EditorGUIUtility.labelWidth = 250;
         EditorGUI.indentLevel++;
 

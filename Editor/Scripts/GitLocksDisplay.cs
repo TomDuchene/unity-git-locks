@@ -61,7 +61,7 @@ public class GitLocksDisplay : EditorWindow
         r.width += 6;
         EditorGUI.DrawRect(r, color);
     }
- 
+
     public static Texture GetIconForLockedObject(GitLocksObject lo)
     {
         if (lo == null)
@@ -172,7 +172,7 @@ public class GitLocksDisplay : EditorWindow
                 string tooltip;
                 Texture lockTexture;
 
-                if(containsOneOfMyLocks && containsOneOfOtherLocks)
+                if (containsOneOfMyLocks && containsOneOfOtherLocks)
                 {
                     lockTexture = GetMixedLockIcon();
                     tooltip = "Folder contains files locked by me and others";
@@ -451,6 +451,44 @@ public class GitLocksDisplay : EditorWindow
         }
     }
 
+    // ------------
+    // File history
+    // ------------
+    [MenuItem("Assets/Show Git History", false, 1101)]
+    private static void ItemMenuGitHistory()
+    {
+        List<string> paths = new List<string>();
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
+        foreach (UnityEngine.Object o in selected)
+        {
+            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            if (Directory.Exists(path))
+            {
+                continue; // Folders are not lockable, skip this asset
+            }
+
+            if (EditorPrefs.GetBool("gitLocksShowHistoryInBrowser", false))
+            {
+
+                string url = EditorPrefs.GetString("gitLocksShowHistoryInBrowserUrl");
+                if (url != string.Empty && url.Contains("$branch") && url.Contains("$assetPath"))
+                {
+                    url = url.Replace("$branch", GitLocks.GetCurrentBranch());
+                    url = url.Replace("$assetPath", path);
+                    UnityEngine.Application.OpenURL(url);
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError("URL was not formatted correctly to show the file's history in your browser: it must be formatted like https://github.com/MyUserName/MyRepo/blob/$branch/$assetPath");
+                }
+            }
+            else
+            {
+                GitLocks.ExecuteProcessTerminal("git", "log " + path, true);
+            }
+        }
+    }
+
     // -----------
     // Toolbox
     // -----------
@@ -471,7 +509,7 @@ public class GitLocksDisplay : EditorWindow
             // Checkboxes for custom selection
             if (myLock)
             {
-                if(selectedLocks == null)
+                if (selectedLocks == null)
                 {
                     selectedLocks = new List<GitLocksObject>();
                 }
@@ -505,7 +543,8 @@ public class GitLocksDisplay : EditorWindow
                 }
             }
 
-            if (EditorPrefs.GetBool("gitLocksShowForceButtons")){
+            if (EditorPrefs.GetBool("gitLocksShowForceButtons"))
+            {
                 if (GUILayout.Button("Force unlock"))
                 {
                     if (EditorUtility.DisplayDialog("Force unlock ?", "Are you sure you want to force the unlock ? It may mess with a teammate's work !", "Yes, I know the risks", "Cancel, I'm not sure"))
@@ -622,7 +661,7 @@ public class GitLocksDisplay : EditorWindow
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Go on github"))
                 {
-                    Application.OpenURL("https://github.com/");
+                    UnityEngine.Application.OpenURL("https://github.com/");
                 }
 
                 if (GUILayout.Button("Setup username in preferences"))
@@ -681,7 +720,7 @@ public class GitLocksDisplay : EditorWindow
                 if (GUILayout.Button("Lock"))
                 {
                     string path = AssetDatabase.GetAssetPath(this.objectToLock);
-                    
+
                     if (path == null || path == string.Empty)
                     {
                         path = GitLocks.GetAssetPathFromPrefabGameObject(this.objectToLock.GetInstanceID());
@@ -708,7 +747,7 @@ public class GitLocksDisplay : EditorWindow
                     allSelected = selectedLocks.Count == GitLocks.GetMyLocks().Count;
                 }
                 bool allSelectedCheckbox = GUILayout.Toggle(allSelected, "All");
-                if(selectedLocks != null && allSelectedCheckbox && !allSelected)
+                if (selectedLocks != null && allSelectedCheckbox && !allSelected)
                 {
                     selectedLocks.Clear();
                     selectedLocks.AddRange(GitLocks.GetMyLocks());
