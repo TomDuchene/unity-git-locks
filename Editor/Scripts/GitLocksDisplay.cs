@@ -235,15 +235,22 @@ public class GitLocksDisplay : EditorWindow
             return false;
         }
 
-        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
-            if (Directory.Exists(AssetDatabase.GetAssetPath(o.GetInstanceID())))
+            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            if (Directory.Exists(path))
             {
-                continue; // If the object is a directory, don't take it into account
+                foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
+                {
+                    string folderPath = path + "/";
+                    if (lo.path.Contains(folderPath))
+                    {
+                        return false;
+                    }
+                }
             }
-
-            if (!GitLocks.IsObjectAvailableToLock(o))
+            else if (!GitLocks.IsObjectAvailableToLock(path))
             {
                 return false;
             }
@@ -256,16 +263,28 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuUnlock()
     {
         List<string> paths = new List<string>();
-        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
             string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
             if (Directory.Exists(path))
             {
-                continue; // Folders are not lockable, skip this asset
+                foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
+                {
+                    string folderPath = path + "/";
+                    if (lo.path.Contains(folderPath))
+                    {
+                        if (GitLocks.IsObjectAvailableToUnlock(lo))
+                        {
+                            paths.Add(lo.path);
+                        }
+                    }
+                }
             }
-
-            paths.Add(path);
+            else if (GitLocks.IsObjectAvailableToUnlock(path))
+            {
+                paths.Add(path);
+            }
         }
 
         GitLocks.UnlockFiles(paths);
@@ -286,21 +305,36 @@ public class GitLocksDisplay : EditorWindow
             return false;
         }
 
-        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
+        bool foundObjectToUnlock = false;
         foreach (UnityEngine.Object o in selected)
         {
-            if (Directory.Exists(AssetDatabase.GetAssetPath(o.GetInstanceID())))
+            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            if (Directory.Exists(path))
             {
-                continue; // If the object is a directory, don't take it into account
+                foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
+                {
+                    string folderPath = path + "/";
+                    if (lo.path.Contains(folderPath))
+                    {
+                        if (lo.IsMine())
+                        {
+                            foundObjectToUnlock = true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
-
-            if (!GitLocks.IsObjectAvailableToUnlock(o))
+            else if (GitLocks.IsObjectAvailableToUnlock(path))
             {
-                return false;
+                foundObjectToUnlock = true;
             }
         }
 
-        return true;
+        return foundObjectToUnlock;
     }
 
     // -------------------------
@@ -457,8 +491,7 @@ public class GitLocksDisplay : EditorWindow
     [MenuItem("Assets/Show Git History", false, 1101)]
     private static void ItemMenuGitHistory()
     {
-        List<string> paths = new List<string>();
-        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.DeepAssets);
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
             string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
@@ -469,7 +502,6 @@ public class GitLocksDisplay : EditorWindow
 
             if (EditorPrefs.GetBool("gitLocksShowHistoryInBrowser", false))
             {
-
                 string url = EditorPrefs.GetString("gitLocksShowHistoryInBrowserUrl");
                 if (url != string.Empty && url.Contains("$branch") && url.Contains("$assetPath"))
                 {
@@ -487,6 +519,22 @@ public class GitLocksDisplay : EditorWindow
                 GitLocks.ExecuteProcessTerminal("git", "log " + path, true);
             }
         }
+    }
+
+    [MenuItem("Assets/Show Git History", true)]
+    private static bool ValidateItemMenuGitHistory()
+    {
+        UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
+        foreach (UnityEngine.Object o in selected)
+        {
+            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            if (Directory.Exists(path))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // -----------

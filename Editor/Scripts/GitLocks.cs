@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -23,6 +24,9 @@ public class GitLocks : ScriptableObject
 
     private static string refreshCallbackResult;
     private static string refreshCallbackError;
+
+    // Ignore meta files to check lockable/unlockable files
+    static string[] ignoredExtensions = new[] { ".meta" };
 
     static GitLocks()
     {
@@ -372,20 +376,7 @@ public class GitLocks : ScriptableObject
 
     public static bool IsObjectAvailableToUnlock(UnityEngine.Object obj)
     {
-        if (lockedObjectsCache == null)
-        {
-            return false;
-        }
-
-        foreach (GitLocksObject lo in lockedObjectsCache)
-        {
-            if (obj == lo.GetObjectReference())
-            {
-                return lo.IsMine();
-            }
-        }
-
-        return false;
+        return IsObjectAvailableToUnlock(AssetDatabase.GetAssetPath(obj.GetInstanceID()));
     }
 
     public static bool IsObjectAvailableToUnlock(string path)
@@ -395,9 +386,14 @@ public class GitLocks : ScriptableObject
             return false;
         }
 
+        if (ignoredExtensions.Any(s => path.Contains(s)))
+        {
+            return false;
+        }
+
         foreach (GitLocksObject lo in lockedObjectsCache)
         {
-            if (path == lo.path)
+            if (path.Replace("\\", "/") == lo.path.Replace("\\", "/"))
             {
                 return lo.IsMine();
             }
@@ -406,34 +402,36 @@ public class GitLocks : ScriptableObject
         return false;
     }
 
-    public static bool IsObjectAvailableToLock(UnityEngine.Object obj)
+    public static bool IsObjectAvailableToUnlock(GitLocksObject lo)
     {
         if (lockedObjectsCache == null)
         {
-            return true;
+            return false;
         }
 
-        foreach (GitLocksObject lo in lockedObjectsCache)
-        {
-            if (obj == lo.GetObjectReference())
-            {
-                return false;
-            }
-        }
+        return lo.IsMine();
+    }
 
-        return true;
+    public static bool IsObjectAvailableToLock(UnityEngine.Object obj)
+    {
+        return IsObjectAvailableToLock(AssetDatabase.GetAssetPath(obj.GetInstanceID()));
     }
 
     public static bool IsObjectAvailableToLock(string path)
     {
         if (lockedObjectsCache == null)
         {
-            return true;
+            return false;
+        }
+
+        if (ignoredExtensions.Any(s => path.Contains(s)))
+        {
+            return false;
         }
 
         foreach (GitLocksObject lo in lockedObjectsCache)
         {
-            if (path == lo.path)
+            if (path.Replace("\\","/") == lo.path.Replace("\\", "/"))
             {
                 return false;
             }
