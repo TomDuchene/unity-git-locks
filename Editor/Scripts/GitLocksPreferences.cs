@@ -176,7 +176,7 @@ public class GitLocksPreferences : SettingsProvider
             bool showForceButtons = EditorGUILayout.ToggleLeft(new GUIContent("Show Force buttons"), EditorPrefs.GetBool("gitLocksShowForceButtons"));
             if (EditorGUI.EndChangeCheck())
             {
-                EditorPrefs.SetBool("gitLocksShowForceButtons", debugMode);
+                EditorPrefs.SetBool("gitLocksShowForceButtons", showForceButtons);
             }
         }
 
