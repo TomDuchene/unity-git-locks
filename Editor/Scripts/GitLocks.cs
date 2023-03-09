@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -232,75 +233,93 @@ public class GitLocks : ScriptableObject
     {
         DebugLog("ExecuteProcessTerminal: " + processName + " with the following parameters:\n" + processArguments);
 
-        try
+        if (openTerminal)
         {
-            using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+            Process p = new Process();
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "cmd.exe";
+            psi.Arguments = "/k " + processName + " " + processArguments;
+            p.StartInfo = psi;
+            p.Start();
+
+            errorString = String.Empty;
+            return String.Empty;
+        }
+        else
+        {
+            try
             {
-                // Redirect the output stream of the child process.
-                p.StartInfo.CreateNoWindow = !openTerminal;
-                p.StartInfo.UseShellExecute = openTerminal;
-                p.StartInfo.RedirectStandardOutput = !openTerminal;
-                p.StartInfo.RedirectStandardError = !openTerminal;
-                p.StartInfo.FileName = processName;
-                p.StartInfo.Arguments = processArguments;
-
-                System.Text.StringBuilder output = new System.Text.StringBuilder();
-                System.Text.StringBuilder error = new System.Text.StringBuilder();
-
-                using (System.Threading.AutoResetEvent outputWaitHandle = new System.Threading.AutoResetEvent(false))
-                using (System.Threading.AutoResetEvent errorWaitHandle = new System.Threading.AutoResetEvent(false))
+                using (System.Diagnostics.Process p = new System.Diagnostics.Process())
                 {
-                    p.OutputDataReceived += (sender, e) =>
+                    // Redirect the output stream of the child process.
+                    p.StartInfo.CreateNoWindow = !openTerminal;
+                    p.StartInfo.UseShellExecute = openTerminal;
+                    p.StartInfo.RedirectStandardOutput = !openTerminal;
+                    p.StartInfo.RedirectStandardError = !openTerminal;
+                    p.StartInfo.FileName = processName;
+                    p.StartInfo.Arguments = processArguments;
+
+                    System.Text.StringBuilder output = new System.Text.StringBuilder();
+                    System.Text.StringBuilder error = new System.Text.StringBuilder();
+
+                    using (System.Threading.AutoResetEvent outputWaitHandle = new System.Threading.AutoResetEvent(false))
+                    using (System.Threading.AutoResetEvent errorWaitHandle = new System.Threading.AutoResetEvent(false))
                     {
-                        if (e.Data == null)
+                        p.OutputDataReceived += (sender, e) =>
                         {
-                            outputWaitHandle.Set();
+                            if (e.Data == null)
+                            {
+                                outputWaitHandle.Set();
+                            }
+                            else
+                            {
+                                output.AppendLine(e.Data);
+                            }
+                        };
+                        p.ErrorDataReceived += (sender, e) =>
+                        {
+                            if (e.Data == null)
+                            {
+                                errorWaitHandle.Set();
+                            }
+                            else
+                            {
+                                error.AppendLine(e.Data);
+                            }
+                        };
+
+                        p.Start();
+
+                        if (!openTerminal)
+                        {
+                            p.BeginOutputReadLine();
+                            p.BeginErrorReadLine();
+                        }
+
+                        int timeout = (int)(requestTimeout * 1000);
+                        if (p.WaitForExit(timeout) &&
+                            outputWaitHandle.WaitOne(timeout) &&
+                            errorWaitHandle.WaitOne(timeout))
+                        {
+                            errorString = error.ToString();
+                            return output.ToString();
                         }
                         else
                         {
-                            output.AppendLine(e.Data);
+                            string err = "Error: Process timed out (" + processName + " " + processArguments + ")";
+                            errorString = err;
+                            UnityEngine.Debug.LogError(err);
+                            return err;
                         }
-                    };
-                    p.ErrorDataReceived += (sender, e) =>
-                    {
-                        if (e.Data == null)
-                        {
-                            errorWaitHandle.Set();
-                        }
-                        else
-                        {
-                            error.AppendLine(e.Data);
-                        }
-                    };
-
-                    p.Start();
-
-                    p.BeginOutputReadLine();
-                    p.BeginErrorReadLine();
-
-                    int timeout = (int)(requestTimeout * 1000);
-                    if (p.WaitForExit(timeout) &&
-                        outputWaitHandle.WaitOne(timeout) &&
-                        errorWaitHandle.WaitOne(timeout))
-                    {
-                        errorString = error.ToString();
-                        return output.ToString();
-                    }
-                    else
-                    {
-                        string err = "Error: Process timed out (" + processName + " " + processArguments + ")";
-                        errorString = err;
-                        Debug.LogError(err);
-                        return err;
                     }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            UnityEngine.Debug.Log(e);
-            errorString = "e";
-            return null;
+            catch (Exception e)
+            {
+                UnityEngine.Debug.Log(e);
+                errorString = "e";
+                return null;
+            }
         }
     }
 
@@ -655,7 +674,7 @@ public class GitLocks : ScriptableObject
         }
         else
         {
-            Debug.LogWarning("GitLocks couldn't parse the Git for Windows version properly");
+            UnityEngine.Debug.LogWarning("GitLocks couldn't parse the Git for Windows version properly");
             return true;
         }
     }
@@ -940,7 +959,7 @@ public class GitLocks : ScriptableObject
     {
         if (EditorPrefs.GetBool("gitLocksDebugMode", false))
         {
-            Debug.Log(s);
+            UnityEngine.Debug.Log(s);
         }
     }
 }
