@@ -1,4 +1,4 @@
-﻿// <copyright file="GitLocksAssetPostprocessor.cs" company="TacticalAdventures">All rights reserved.</copyright>
+﻿// <copyright file="GitLocksAssetPostprocessor.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
 using System.Collections;
 using System.Collections.Generic;

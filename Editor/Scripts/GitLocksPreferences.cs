@@ -1,4 +1,4 @@
-// <copyright file="GitLocksPreferences.cs" company="TacticalAdventures">All rights reserved.</copyright>
+// <copyright file="GitLocksPreferences.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
 using UnityEditor;
 using UnityEngine;

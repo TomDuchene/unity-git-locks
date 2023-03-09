@@ -1,4 +1,4 @@
-// <copyright file="GitLocksDisplay.cs" company="TacticalAdventures">All rights reserved.</copyright>
+// <copyright file="GitLocksDisplay.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ public class GitLocksDisplay : EditorWindow
         EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyLocks;
     }
 
-    [MenuItem("Window/Tactical Adventures/Git Locks")]
+    [MenuItem("Window/Git Locks")]
     public static void ShowWindow()
     {
         // Show existing window instance. If one doesn't exist, make one.
@@ -621,11 +621,11 @@ public class GitLocksDisplay : EditorWindow
         {
             if (EditorPrefs.HasKey("gitLocksColorblindMode") && EditorPrefs.GetBool("gitLocksColorblindMode"))
             {
-                greenLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/greenLock_cb.png", typeof(Texture));
+                greenLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/greenLock_cb.png", typeof(Texture));
             }
             else
             {
-                greenLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/greenLock.png", typeof(Texture));
+                greenLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/greenLock.png", typeof(Texture));
             }
         }
 
@@ -638,11 +638,11 @@ public class GitLocksDisplay : EditorWindow
         {
             if (EditorPrefs.HasKey("gitLocksColorblindMode") && EditorPrefs.GetBool("gitLocksColorblindMode"))
             {
-                orangeLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/orangeLock_cb.png", typeof(Texture));
+                orangeLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/orangeLock_cb.png", typeof(Texture));
             }
             else
             {
-                orangeLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/orangeLock.png", typeof(Texture));
+                orangeLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/orangeLock.png", typeof(Texture));
             }
         }
 
@@ -655,11 +655,11 @@ public class GitLocksDisplay : EditorWindow
         {
             if (EditorPrefs.HasKey("gitLocksColorblindMode") && EditorPrefs.GetBool("gitLocksColorblindMode"))
             {
-                redLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/redLock_cb.png", typeof(Texture));
+                redLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/redLock_cb.png", typeof(Texture));
             }
             else
             {
-                redLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/redLock.png", typeof(Texture));
+                redLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/redLock.png", typeof(Texture));
             }
         }
 
@@ -672,11 +672,11 @@ public class GitLocksDisplay : EditorWindow
         {
             if (EditorPrefs.HasKey("gitLocksColorblindMode") && EditorPrefs.GetBool("gitLocksColorblindMode"))
             {
-                mixedLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/mixedLock_cb.png", typeof(Texture));
+                mixedLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/mixedLock_cb.png", typeof(Texture));
             }
             else
             {
-                mixedLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tacticaladventures.unity-git-locks/Editor/Textures/mixedLock.png", typeof(Texture));
+                mixedLockIcon = (Texture)AssetDatabase.LoadAssetAtPath("Packages/com.tomduchene.unity-git-locks/Editor/Textures/mixedLock.png", typeof(Texture));
             }
         }
 

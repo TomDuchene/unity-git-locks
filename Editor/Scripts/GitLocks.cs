@@ -1,4 +1,4 @@
-// <copyright file="GitLocks.cs" company="TacticalAdventures">All rights reserved.</copyright>
+// <copyright file="GitLocks.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
 using System;
 using System.Collections.Generic;
