@@ -1,7 +1,7 @@
 {
   "name": "com.tacticaladventures.unity-git-locks",
   "displayName": "Git Locks",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "An editor tool to manipulate git LFS locks",
   "keywords": [
     "unity",

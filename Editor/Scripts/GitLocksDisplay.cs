@@ -27,6 +27,9 @@ public class GitLocksDisplay : EditorWindow
 
     private static List<GitLocksObject> selectedLocks;
 
+    // Show git history
+    private static int showHistoryMaxNumOfFilesBeforeWarning = 5;
+
     static GitLocksDisplay()
     {
         // Add our own GUI to the project and hierarchy windows
@@ -492,31 +495,36 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuGitHistory()
     {
         UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
-        foreach (UnityEngine.Object o in selected)
+        
+        // Display a warning if you're about to open many CLIs or browser tabs to prevent slowing down your computer if you misclick
+        if (selected.Length <= showHistoryMaxNumOfFilesBeforeWarning || EditorUtility.DisplayDialog("Are you sure?", "More than " + showHistoryMaxNumOfFilesBeforeWarning + " files have been selected, are you sure you want to open the history for all of them?", "Yes", "Cancel"))
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
-            if (Directory.Exists(path))
+            foreach (UnityEngine.Object o in selected)
             {
-                continue; // Folders are not lockable, skip this asset
-            }
-
-            if (EditorPrefs.GetBool("gitLocksShowHistoryInBrowser", false))
-            {
-                string url = EditorPrefs.GetString("gitLocksShowHistoryInBrowserUrl");
-                if (url != string.Empty && url.Contains("$branch") && url.Contains("$assetPath"))
+                string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+                if (Directory.Exists(path))
                 {
-                    url = url.Replace("$branch", GitLocks.GetCurrentBranch());
-                    url = url.Replace("$assetPath", path);
-                    UnityEngine.Application.OpenURL(url);
+                    continue; // Folders are not lockable, skip this asset
+                }
+
+                if (EditorPrefs.GetBool("gitLocksShowHistoryInBrowser", false))
+                {
+                    string url = EditorPrefs.GetString("gitLocksShowHistoryInBrowserUrl");
+                    if (url != string.Empty && url.Contains("$branch") && url.Contains("$assetPath"))
+                    {
+                        url = url.Replace("$branch", GitLocks.GetCurrentBranch());
+                        url = url.Replace("$assetPath", path);
+                        UnityEngine.Application.OpenURL(url);
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogError("URL was not formatted correctly to show the file's history in your browser: it must be formatted like https://github.com/MyUserName/MyRepo/blob/$branch/$assetPath");
+                    }
                 }
                 else
                 {
-                    UnityEngine.Debug.LogError("URL was not formatted correctly to show the file's history in your browser: it must be formatted like https://github.com/MyUserName/MyRepo/blob/$branch/$assetPath");
+                    GitLocks.ExecuteProcessTerminal("git", "log " + path, true);
                 }
-            }
-            else
-            {
-                GitLocks.ExecuteProcessTerminal("git", "log " + path, true);
             }
         }
     }
