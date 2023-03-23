@@ -194,7 +194,7 @@ public class GitLocksPreferences : SettingsProvider
         EditorGUILayout.BeginHorizontal();
 
         EditorGUI.BeginChangeCheck();
-        bool showHistoryInBrowser = EditorGUILayout.ToggleLeft(new GUIContent("Show file history in browser"), EditorPrefs.GetBool("gitLocksShowHistoryInBrowser"), GUILayout.Width(190));
+        bool showHistoryInBrowser = EditorGUILayout.ToggleLeft(new GUIContent("Show file history in browser"), EditorPrefs.GetBool("gitLocksShowHistoryInBrowser"), GUILayout.Width(195));
         if (EditorGUI.EndChangeCheck())
         {
             EditorPrefs.SetBool("gitLocksShowHistoryInBrowser", showHistoryInBrowser);
