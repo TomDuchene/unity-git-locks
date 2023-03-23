@@ -120,7 +120,7 @@ public class GitLocksDisplay : EditorWindow
             {
                 if (lo.IsMine())
                 {
-                    if (!EditorUtility.DisplayDialog("Asset locked by you", "You have locked this asset, you're safe working on it", "OK", "Unlock"))
+                    if (!EditorUtility.DisplayDialog("Asset locked by you", "You have locked this asset, you're safe working on it.", "OK", "Unlock"))
                     {
                         GitLocks.UnlockFile(lo.path);
                         GitLocks.RefreshLocks();
@@ -128,11 +128,11 @@ public class GitLocksDisplay : EditorWindow
                 }
                 else if (GitLocks.IsLockedObjectConflictingWithUncommitedFile(lo))
                 {
-                    EditorUtility.DisplayDialog("Asset locked by someone else and conflicting", "User " + lo.owner.name + " has locked this asset and you have uncommited modifications: you should probably discard them as you won't be able to push them", "OK");
+                    EditorUtility.DisplayDialog("Asset locked by someone else and conflicting", "User " + lo.owner.name + " has locked this asset (" + lo.GetLockDateTimeString() + ") and you have uncommited modifications: you should probably discard them as you won't be able to push them.", "OK");
                 }
                 else
                 {
-                    EditorUtility.DisplayDialog("Asset locked by someone else", "User " + lo.owner.name + " has locked this asset, you cannot work on it", "OK");
+                    EditorUtility.DisplayDialog("Asset locked by someone else", "User " + lo.owner.name + " has locked this asset (" + lo.GetLockDateTimeString() + "), you cannot work on it.", "OK");
                 }
             }
         }
@@ -588,7 +588,7 @@ public class GitLocksDisplay : EditorWindow
 
             EditorGUILayout.LabelField(new GUIContent(lo.path, lo.path), GUILayout.Width(othersWidth));
 
-            GUILayout.Label(lo.owner.name, GUILayout.Width(othersWidth));
+            GUILayout.Label(new GUIContent(lo.owner.name, lo.GetLockDateTimeString()), GUILayout.Width(othersWidth));
 
             if (myLock)
             {

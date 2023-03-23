@@ -1,5 +1,6 @@
 // <copyright file="GitLocksObject.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
+using System;
 using UnityEditor;
 
 [System.Serializable]
@@ -31,6 +32,13 @@ public class GitLocksObject
     public bool IsMine()
     {
         return this.owner.name == GitLocks.GetGitUsername();
+    }
+
+    public string GetLockDateTimeString()
+    {
+        DateTime dt = DateTime.Parse(locked_at);
+        string r = dt.ToShortDateString() + " - " + dt.ToShortTimeString();
+        return r;
     }
 }
 

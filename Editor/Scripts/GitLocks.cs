@@ -154,13 +154,20 @@ public class GitLocks : ScriptableObject
             BuildUncommitedCache();
             if (GetDisplayLocksConflictWarning())
             {
+                string conflictMessage = "The following files are currently locked and you have uncommited changes on them that you'll probably not be able to push:";
+                bool conflictFound = false;
                 foreach (GitLocksObject lo in lockedObjectsCache)
                 {
                     if (IsLockedObjectConflictingWithUncommitedFile(lo) && !IsFileInConflictIgnoreList(lo.path))
                     {
-                        EditorUtility.DisplayDialog("Warning", "The following file is currently locked by " + lo.owner.name + " and you have uncommited changes on it that you'll probably not be able to push : \n" + lo.path, "OK");
+                        conflictFound = true;
+                        conflictMessage += "\n" + lo.path;
                         AddFileToConflictWarningIgnoreList(lo.path);
                     }
+                }
+                if (conflictFound)
+                {
+                    EditorUtility.DisplayDialog("Warning", conflictMessage, "OK");
                 }
             }
 
