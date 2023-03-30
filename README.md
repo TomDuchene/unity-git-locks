@@ -10,6 +10,8 @@ The plugin uses simple calls to the Git LFS locks commands, which means you have
 
 This tool is intended to be used by developers, designers and artists alike, providing a flexible, easy and safe way of working as a team.
 
+&nbsp;
+&nbsp;
 
 ## How to use
 
@@ -40,6 +42,12 @@ You have to input it in the Preferences window (`Edit/Preferences/Git Locks/Git 
 
 <img src=".docs\img\username.PNG" alt="Set Username" width="50%" />
 
+### Troubleshooting
+
+Every git setup is a little bit different, so here's a [troubleshooting wiki page](https://github.com/TomDuchene/unity-git-locks/wiki/Troubleshooting) to help if you have errors.
+
+&nbsp;
+&nbsp;
 
 ## Features
 
@@ -47,7 +55,7 @@ You have to input it in the Preferences window (`Edit/Preferences/Git Locks/Git 
 
 <img src=".docs\img\lockswindow.PNG" alt="Main locks window" width="50%" />
 
-Accessible through `Window/Tactical Adventures/Git Locks`, this window will show you :
+Accessible through `Window/Git Locks`, this window will show you :
 
 -   Refresh time information
 -   A setup button to go back to the preferences
@@ -114,6 +122,8 @@ In the project window, you can use Ctrl + Maj + **L** or **U** to **L**ock/**U**
 
 If you prefer having shortcuts to lock/unlock prefabs in the hierarchy, you can add some in `Edit / Shortcuts / “Main Menu/GameObject/Git LFS Lock” (or “Unlock”)`
 
+&nbsp;
+&nbsp;
 
 ## Misc
 
