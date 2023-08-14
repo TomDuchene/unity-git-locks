@@ -1,6 +1,7 @@
 // <copyright file="GitLocksObject.cs" company="Tom Duchene and Tactical Adventures">All rights reserved.</copyright>
 
 using System;
+using System.Runtime.Serialization;
 using UnityEditor;
 
 [System.Serializable]
@@ -24,7 +25,7 @@ public class GitLocksObject
         }
         else
         {
-            this.objectRef = AssetDatabase.LoadMainAssetAtPath(this.path);
+            this.objectRef = AssetDatabase.LoadMainAssetAtPath(path);
             return this.objectRef;
         }
     }
@@ -40,6 +41,20 @@ public class GitLocksObject
         string r = dt.ToShortDateString() + " - " + dt.ToShortTimeString();
         return r;
     }
+
+    [OnDeserialized]
+    internal void OnDeserializedMethod(StreamingContext context)
+    {
+        path = FindRelativePath("Assets");
+    }
+
+    private string FindRelativePath(string relativeFolder)
+    {
+        int index = path.IndexOf(relativeFolder, StringComparison.OrdinalIgnoreCase);
+        if (index != -1) return path.Substring(index);
+        else return path;
+    }
+
 }
 
 public class LockedObjectOwner
