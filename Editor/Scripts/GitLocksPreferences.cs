@@ -230,13 +230,13 @@ public class GitLocksPreferences : SettingsProvider
             EditorGUILayout.LabelField(new GUIContent("Your git version seems outdated (2.30.0 minimum), you may need to update it and then setup the Credentials Manager for the authentication to work properly"), EditorStyles.wordWrappedLabel);
             if (GUILayout.Button("Update Git for Windows"))
             {
-                GitLocks.ExecuteProcessTerminal("git", "update-git-for-windows");
+                GitLocks.ExecuteProcessTerminal("git", "update-git-for-windows", true);
             }
         }
 
         if (GUILayout.Button("Setup credentials manager (when using HTTPS)"))
         {
-            GitLocks.ExecuteProcessTerminalWithConsole("git", "config --local credential.helper manager-core");
+            GitLocks.ExecuteProcessTerminalWithConsole("git", "config --local credential.helper manager");
         }
 
         EditorGUI.indentLevel--;

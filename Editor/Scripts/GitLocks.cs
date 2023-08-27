@@ -930,7 +930,7 @@ public class GitLocks : ScriptableObject
             if (!EditorUtility.DisplayDialog("Git Lfs Locks Error", "Git lfs locks error :\n\n" + refreshCallbackError + "\n\nIf it's your first time using the tool, you should probably setup the credentials manager", "OK", "Setup credentials"))
             {
                 DebugLog("Setup credentials manager");
-                ExecuteProcessTerminalWithConsole("git", "config --global credential.helper manager-core");
+                ExecuteProcessTerminalWithConsole("git", "config --global credential.helper manager");
             }
 
             refreshCallbackError = null;
