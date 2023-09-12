@@ -904,7 +904,7 @@ public class GitLocks : ScriptableObject
 
     private static void Update()
     {
-        if (!IsEnabled() || EditorApplication.isUpdating || EditorApplication.isCompiling)
+        if (!IsEnabled() || EditorApplication.isUpdating || EditorApplication.isCompiling || EditorApplication.isPlaying)
         {
             return; // Early return if the whole tool is disabled of if the Editor is not available
         }
