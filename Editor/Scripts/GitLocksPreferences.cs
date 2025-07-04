@@ -120,7 +120,7 @@ public class GitLocksPreferences : SettingsProvider
             }
 
             EditorGUI.BeginChangeCheck();
-            bool warnIfFileHasBeenModifiedOnServer = EditorGUILayout.ToggleLeft(new GUIContent("Warn if the file has already been modified on server when locking"), EditorPrefs.GetBool("warnIfFileHasBeenModifiedOnServer"));
+            bool warnIfFileHasBeenModifiedOnServer = EditorGUILayout.ToggleLeft(new GUIContent("Warn if the file has been modified on the server before locking (slower)"), EditorPrefs.GetBool("warnIfFileHasBeenModifiedOnServer"));
             if (EditorGUI.EndChangeCheck())
             {
                 EditorPrefs.SetBool("warnIfFileHasBeenModifiedOnServer", warnIfFileHasBeenModifiedOnServer);

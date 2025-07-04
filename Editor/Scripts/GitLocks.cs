@@ -521,6 +521,12 @@ public class GitLocks : ScriptableObject
             DebugLog("Trying to lock " + paths[0]);
         }
 
+        // Build "modified on server cache" just once, if we need to check it later
+        if (EditorPrefs.GetBool("warnIfFileHasBeenModifiedOnServer"))
+        {
+            BuildModifiedOnServerCache();
+        }
+
         // Split into multiple requests if there are too many files (prevents triggering timeout)
         int numOfRequests = (int)Math.Ceiling((float)paths.Count / (float)EditorPrefs.GetInt("gitLocksMaxFilesNumPerRequest", 15));
         List<string> pathsStrings = new List<string>(new string[numOfRequests]);
@@ -875,7 +881,6 @@ public class GitLocks : ScriptableObject
 
     public static bool HasFileBeenModifiedOnServer(string filePath)
     {
-        BuildModifiedOnServerCache();
         return modifiedOnServerFilesCache.Contains(filePath);
     }
 
