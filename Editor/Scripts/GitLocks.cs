@@ -847,7 +847,7 @@ public class GitLocks : ScriptableObject
         foreach (string branch in branchesToCheck)
         {
             // Fetch
-            ExecuteProcessTerminal("git", "git fetch origin " + branch);
+            ExecuteProcessTerminal("git", "fetch origin " + branch);
 
             // List all distant commits
             string output = ExecuteProcessTerminal("git", "rev-list " + currentBranch + "..origin/" + branch);

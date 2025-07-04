@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [InitializeOnLoad]
 public class GitLocksDisplay : EditorWindow
@@ -346,12 +347,7 @@ public class GitLocksDisplay : EditorWindow
     [MenuItem("GameObject/Git LFS Lock", false, 40)]
     private static void ItemMenuLockHierarchy()
     {
-        List<string> paths = new List<string>();
-        foreach (UnityEngine.Object o in Selection.objects)
-        {
-            string path = GitLocks.GetAssetPathFromPrefabGameObject(o.GetInstanceID());
-            paths.Add(path);
-        }
+        List<string> paths = SelectionToPaths();
 
         GitLocks.LockFiles(paths);
 
@@ -375,15 +371,21 @@ public class GitLocksDisplay : EditorWindow
             return false;
         }
 
-        foreach (UnityEngine.Object o in Selection.objects)
+        List<string> paths = SelectionToPaths();
+
+        if (paths.Count == 0)
         {
-            if (o == null)
+            return false;
+        }
+
+        foreach (string path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return false;
             }
 
-            string path = GitLocks.GetAssetPathFromPrefabGameObject(o.GetInstanceID());
-            if (path == null || path == string.Empty || !GitLocks.IsObjectAvailableToLock(path))
+            if (!GitLocks.IsObjectAvailableToLock(path))
             {
                 return false;
             }
@@ -395,12 +397,7 @@ public class GitLocksDisplay : EditorWindow
     [MenuItem("GameObject/Git LFS Unlock", false, 41)]
     private static void ItemMenuUnlockHierarchy()
     {
-        List<string> paths = new List<string>();
-        foreach (UnityEngine.Object o in Selection.objects)
-        {
-            string path = GitLocks.GetAssetPathFromPrefabGameObject(o.GetInstanceID());
-            paths.Add(path);
-        }
+        List<string> paths = SelectionToPaths();
 
         GitLocks.UnlockFiles(paths);
 
@@ -495,7 +492,7 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuGitHistory()
     {
         UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
-        
+
         // Display a warning if you're about to open many CLIs or browser tabs to prevent slowing down your computer if you misclick
         if (selected.Length <= showHistoryMaxNumOfFilesBeforeWarning || EditorUtility.DisplayDialog("Are you sure?", "More than " + showHistoryMaxNumOfFilesBeforeWarning + " files have been selected, are you sure you want to open the history for all of them?", "Yes", "Cancel"))
         {
@@ -548,6 +545,34 @@ public class GitLocksDisplay : EditorWindow
     // -----------
     // Toolbox
     // -----------
+    private static List<string> SelectionToPaths()
+    {
+        List<string> paths = new List<string>();
+
+        Dictionary<int, Scene> _loadedScenesByHash = new Dictionary<int, Scene>();
+        int countLoaded = SceneManager.sceneCount;
+        for (int i = 0; i < countLoaded; i++)
+        {
+            Scene loadedScene = SceneManager.GetSceneAt(i);
+            _loadedScenesByHash[loadedScene.GetHashCode()] = loadedScene;
+        }
+
+        foreach (int instanceID in Selection.instanceIDs)
+        {
+            UnityEngine.Object obj = EditorUtility.InstanceIDToObject(instanceID);
+            if (obj != null)
+            {
+                string path = GitLocks.GetAssetPathFromPrefabGameObject(instanceID);
+                paths.Add(path);
+            }
+            else if (_loadedScenesByHash.TryGetValue(instanceID, out Scene scene))
+            {
+                paths.Add(scene.path);
+            }
+        }
+
+        return paths;
+    }
     private static void DrawLockedObjectLine(GitLocksObject lo, bool myLock = false)
     {
         UnityEngine.Object lockedObj = lo.GetObjectReference();
