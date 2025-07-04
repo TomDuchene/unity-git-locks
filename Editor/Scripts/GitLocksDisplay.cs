@@ -421,15 +421,21 @@ public class GitLocksDisplay : EditorWindow
             return false;
         }
 
-        foreach (UnityEngine.Object o in Selection.objects)
+        List<string> paths = SelectionToPaths();
+
+        if (paths.Count == 0)
         {
-            if (o == null)
+            return false;
+        }
+
+        foreach (string path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return false;
             }
 
-            string path = GitLocks.GetAssetPathFromPrefabGameObject(o.GetInstanceID());
-            if (path == null || path == string.Empty || !GitLocks.IsObjectAvailableToUnlock(path))
+            if (!GitLocks.IsObjectAvailableToUnlock(path))
             {
                 return false;
             }
@@ -573,6 +579,7 @@ public class GitLocksDisplay : EditorWindow
 
         return paths;
     }
+
     private static void DrawLockedObjectLine(GitLocksObject lo, bool myLock = false)
     {
         UnityEngine.Object lockedObj = lo.GetObjectReference();
