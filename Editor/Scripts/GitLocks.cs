@@ -402,7 +402,7 @@ public class GitLocks : ScriptableObject
 
     public static bool IsObjectAvailableToUnlock(UnityEngine.Object obj)
     {
-        return IsObjectAvailableToUnlock(AssetDatabase.GetAssetPath(obj.GetInstanceID()));
+        return IsObjectAvailableToUnlock(AssetDatabase.GetAssetPath(obj.GetEntityId()));
     }
 
     public static bool IsObjectAvailableToUnlock(string path)
@@ -440,7 +440,7 @@ public class GitLocks : ScriptableObject
 
     public static bool IsObjectAvailableToLock(UnityEngine.Object obj)
     {
-        return IsObjectAvailableToLock(AssetDatabase.GetAssetPath(obj.GetInstanceID()));
+        return IsObjectAvailableToLock(AssetDatabase.GetAssetPath(obj.GetEntityId()));
     }
 
     public static bool IsObjectAvailableToLock(string path)
@@ -697,9 +697,9 @@ public class GitLocks : ScriptableObject
         return EditorPrefs.GetBool("displayLocksConflictWarning");
     }
 
-    public static string GetAssetPathFromPrefabGameObject(int instanceID)
+    public static string GetAssetPathFromPrefabGameObject(EntityId entityId)
     {
-        var gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+        var gameObject = EditorUtility.EntityIdToObject(entityId) as GameObject;
         return GetAssetPathFromPrefabGameObject(gameObject);
     }
 
@@ -713,9 +713,9 @@ public class GitLocks : ScriptableObject
         return string.Empty;
     }
 
-    public static bool IsObjectPrefabRoot(int instanceID)
+    public static bool IsObjectPrefabRoot(EntityId entityId)
     {
-        var gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+        var gameObject = EditorUtility.EntityIdToObject(entityId) as GameObject;
         return IsObjectPrefabRoot(gameObject);
     }
 
@@ -729,12 +729,12 @@ public class GitLocks : ScriptableObject
         return false;
     }
 
-    public static Scene GetSceneFromInstanceID(int instanceID)
+    public static Scene GetSceneFromEntityId(EntityId entityId)
     {
         for (int index = 0; index < SceneManager.sceneCount; index++)
         {
             var scene = SceneManager.GetSceneAt(index);
-            if (scene.handle == instanceID)
+            if (scene.handle.GetRawData() == EntityId.ToULong(entityId))
             {
                 return scene;
             }
