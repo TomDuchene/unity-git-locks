@@ -349,6 +349,9 @@ public class GitLocksDisplay : EditorWindow
     {
         List<string> paths = SelectionToPaths();
 
+        if (paths.Count == 0)
+            return;
+
         GitLocks.LockFiles(paths);
 
         // Clear the selection to make sure it's called only once
@@ -398,6 +401,9 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuUnlockHierarchy()
     {
         List<string> paths = SelectionToPaths();
+
+        if (paths.Count == 0)
+            return;
 
         GitLocks.UnlockFiles(paths);
 
