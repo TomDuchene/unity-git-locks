@@ -402,7 +402,7 @@ public class GitLocks : ScriptableObject
 
     public static bool IsObjectAvailableToUnlock(UnityEngine.Object obj)
     {
-        return IsObjectAvailableToUnlock(AssetDatabase.GetAssetPath(obj.GetEntityId()));
+        return IsObjectAvailableToUnlock(GitLocksAssetUtils.GetAssetPath(obj));
     }
 
     public static bool IsObjectAvailableToUnlock(string path)
@@ -440,7 +440,7 @@ public class GitLocks : ScriptableObject
 
     public static bool IsObjectAvailableToLock(UnityEngine.Object obj)
     {
-        return IsObjectAvailableToLock(AssetDatabase.GetAssetPath(obj.GetEntityId()));
+        return IsObjectAvailableToLock(GitLocksAssetUtils.GetAssetPath(obj));
     }
 
     public static bool IsObjectAvailableToLock(string path)
@@ -695,52 +695,6 @@ public class GitLocks : ScriptableObject
     public static bool GetDisplayLocksConflictWarning()
     {
         return EditorPrefs.GetBool("displayLocksConflictWarning");
-    }
-
-    public static string GetAssetPathFromPrefabGameObject(EntityId entityId)
-    {
-        var gameObject = EditorUtility.EntityIdToObject(entityId) as GameObject;
-        return GetAssetPathFromPrefabGameObject(gameObject);
-    }
-
-    public static string GetAssetPathFromPrefabGameObject(GameObject gameObject)
-    {
-        if (gameObject != null)
-        {
-            return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(gameObject);
-        }
-
-        return string.Empty;
-    }
-
-    public static bool IsObjectPrefabRoot(EntityId entityId)
-    {
-        var gameObject = EditorUtility.EntityIdToObject(entityId) as GameObject;
-        return IsObjectPrefabRoot(gameObject);
-    }
-
-    public static bool IsObjectPrefabRoot(GameObject gameObject)
-    {
-        if (gameObject != null)
-        {
-            return PrefabUtility.GetNearestPrefabInstanceRoot(gameObject) == gameObject;
-        }
-
-        return false;
-    }
-
-    public static Scene GetSceneFromEntityId(EntityId entityId)
-    {
-        for (int index = 0; index < SceneManager.sceneCount; index++)
-        {
-            var scene = SceneManager.GetSceneAt(index);
-            if (scene.handle.GetRawData() == EntityId.ToULong(entityId))
-            {
-                return scene;
-            }
-        }
-
-        return default;
     }
 
     public static bool IsLockedObjectConflictingWithUncommitedFile(GitLocksObject lo)
