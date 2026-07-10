@@ -35,8 +35,8 @@ public class GitLocksDisplay : EditorWindow
     {
         // Add our own GUI to the project and hierarchy windows
         EditorApplication.projectWindowItemOnGUI += DrawProjectLocks;
-#if UNITY_6_5_OR_NEWER
-        EditorApplication.hierarchyWindowItemByEntityIdOnGUI += DrawHierarchyLocks;
+#if UNITY_6000_5_OR_NEWER
+		EditorApplication.hierarchyWindowItemByEntityIdOnGUI += DrawHierarchyLocks;
 #else
 		EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyLocks;
 #endif
@@ -471,8 +471,8 @@ public class GitLocksDisplay : EditorWindow
         DisplayLockIcon(path, selectionRect, -12f);
     }
 
-#if UNITY_6_5_OR_NEWER
-    private static void DrawHierarchyLocks(EntityId id, Rect selectionRect)
+#if UNITY_6000_5_OR_NEWER
+	private static void DrawHierarchyLocks(EntityId id, Rect selectionRect)
 #else
 	private static void DrawHierarchyLocks(int id, Rect selectionRect)
 #endif
