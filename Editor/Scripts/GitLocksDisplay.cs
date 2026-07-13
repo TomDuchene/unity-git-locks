@@ -35,7 +35,7 @@ public class GitLocksDisplay : EditorWindow
     {
         // Add our own GUI to the project and hierarchy windows
         EditorApplication.projectWindowItemOnGUI += DrawProjectLocks;
-        EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyLocks;
+        EditorApplication.hierarchyWindowItemByEntityIdOnGUI += DrawHierarchyLocks;
     }
 
     [MenuItem("Window/Git Locks")]
@@ -212,7 +212,7 @@ public class GitLocksDisplay : EditorWindow
         List<string> paths = new List<string>();
         foreach (UnityEngine.Object o in selected)
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            string path = AssetDatabase.GetAssetPath(o.GetEntityId());
             if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
             {
                 continue; // Folders are not lockable, skip this asset
@@ -242,7 +242,7 @@ public class GitLocksDisplay : EditorWindow
         UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            string path = AssetDatabase.GetAssetPath(o.GetEntityId());
             if (Directory.Exists(path))
             {
                 foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
@@ -270,7 +270,7 @@ public class GitLocksDisplay : EditorWindow
         UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            string path = AssetDatabase.GetAssetPath(o.GetEntityId());
             if (Directory.Exists(path))
             {
                 foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
@@ -313,7 +313,7 @@ public class GitLocksDisplay : EditorWindow
         bool foundObjectToUnlock = false;
         foreach (UnityEngine.Object o in selected)
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            string path = AssetDatabase.GetAssetPath(o.GetEntityId());
             if (Directory.Exists(path))
             {
                 foreach (GitLocksObject lo in GitLocks.LockedObjectsCache)
@@ -348,6 +348,9 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuLockHierarchy()
     {
         List<string> paths = SelectionToPaths();
+
+        if (paths.Count == 0)
+            return;
 
         GitLocks.LockFiles(paths);
 
@@ -398,6 +401,9 @@ public class GitLocksDisplay : EditorWindow
     private static void ItemMenuUnlockHierarchy()
     {
         List<string> paths = SelectionToPaths();
+
+        if (paths.Count == 0)
+            return;
 
         GitLocks.UnlockFiles(paths);
 
@@ -461,7 +467,7 @@ public class GitLocksDisplay : EditorWindow
         DisplayLockIcon(path, selectionRect, -12f);
     }
 
-    private static void DrawHierarchyLocks(int instanceID, Rect selectionRect)
+    private static void DrawHierarchyLocks(EntityId entityId, Rect selectionRect)
     {
         if (!GitLocks.IsEnabled())
         {
@@ -474,14 +480,14 @@ public class GitLocksDisplay : EditorWindow
         bool small = false;
 
         // Handle scenes
-        path = GitLocks.GetSceneFromInstanceID(instanceID).path;
+        path = GitLocks.GetSceneFromEntityId(entityId).path;
 
         // Handle prefabs
-        string tmpPath = GitLocks.GetAssetPathFromPrefabGameObject(instanceID);
+        string tmpPath = GitLocks.GetAssetPathFromPrefabGameObject(entityId);
         if (tmpPath != string.Empty)
         {
             path = tmpPath;
-            small = !GitLocks.IsObjectPrefabRoot(instanceID);
+            small = !GitLocks.IsObjectPrefabRoot(entityId);
         }
 
         // Display
@@ -504,7 +510,7 @@ public class GitLocksDisplay : EditorWindow
         {
             foreach (UnityEngine.Object o in selected)
             {
-                string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+                string path = AssetDatabase.GetAssetPath(o.GetEntityId());
                 if (Directory.Exists(path))
                 {
                     continue; // Folders are not lockable, skip this asset
@@ -538,7 +544,7 @@ public class GitLocksDisplay : EditorWindow
         UnityEngine.Object[] selected = Selection.GetFiltered<UnityEngine.Object>(SelectionMode.Assets);
         foreach (UnityEngine.Object o in selected)
         {
-            string path = AssetDatabase.GetAssetPath(o.GetInstanceID());
+            string path = AssetDatabase.GetAssetPath(o.GetEntityId());
             if (Directory.Exists(path))
             {
                 return false;
@@ -555,23 +561,23 @@ public class GitLocksDisplay : EditorWindow
     {
         List<string> paths = new List<string>();
 
-        Dictionary<int, Scene> _loadedScenesByHash = new Dictionary<int, Scene>();
+        Dictionary<ulong, Scene> _loadedScenesByHash = new Dictionary<ulong, Scene>();
         int countLoaded = SceneManager.sceneCount;
         for (int i = 0; i < countLoaded; i++)
         {
             Scene loadedScene = SceneManager.GetSceneAt(i);
-            _loadedScenesByHash[loadedScene.GetHashCode()] = loadedScene;
+            _loadedScenesByHash[loadedScene.handle.GetRawData()] = loadedScene;
         }
 
-        foreach (int instanceID in Selection.instanceIDs)
+        foreach (EntityId entityId in Selection.entityIds)
         {
-            UnityEngine.Object obj = EditorUtility.InstanceIDToObject(instanceID);
+            UnityEngine.Object obj = EditorUtility.EntityIdToObject(entityId);
             if (obj != null)
             {
-                string path = GitLocks.GetAssetPathFromPrefabGameObject(instanceID);
+                string path = GitLocks.GetAssetPathFromPrefabGameObject(obj.GetEntityId());
                 paths.Add(path);
             }
-            else if (_loadedScenesByHash.TryGetValue(instanceID, out Scene scene))
+            else if (_loadedScenesByHash.TryGetValue(EntityId.ToULong(entityId), out Scene scene))
             {
                 paths.Add(scene.path);
             }
@@ -811,7 +817,7 @@ public class GitLocksDisplay : EditorWindow
 
                     if (path == null || path == string.Empty)
                     {
-                        path = GitLocks.GetAssetPathFromPrefabGameObject(this.objectToLock.GetInstanceID());
+                        path = GitLocks.GetAssetPathFromPrefabGameObject(this.objectToLock.GetEntityId());
                     }
 
                     GitLocks.LockFile(path);
