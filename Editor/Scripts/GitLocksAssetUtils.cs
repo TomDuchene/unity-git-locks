@@ -7,7 +7,7 @@ public static class GitLocksAssetUtils
 {
 	public static string GetAssetPath(this UnityEngine.Object obj)
 	{
-#if UNITY_6_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
         return AssetDatabase.GetAssetPath(obj.GetEntityId());
 #else
 		return AssetDatabase.GetAssetPath(obj.GetInstanceID());
@@ -16,8 +16,8 @@ public static class GitLocksAssetUtils
 
 	public static string GetObjectFromId(this UnityEngine.Object obj)
 	{
-#if UNITY_6_5_OR_NEWER
-        return AssetDatabase.GetAssetPath(obj.GetEntityId());
+#if UNITY_6000_5_OR_NEWER
+		return AssetDatabase.GetAssetPath(obj.GetEntityId());
 #else
 		return AssetDatabase.GetAssetPath(obj.GetInstanceID());
 #endif
@@ -25,8 +25,8 @@ public static class GitLocksAssetUtils
 
 	public static string GetAssetPathFromPrefabGameObject(UnityEngine.Object obj)
 	{
-#if UNITY_6_5_OR_NEWER
-        var gameObject = EditorUtility.EntityIdToObject(obj.GetEntityId()) as GameObject;
+#if UNITY_6000_5_OR_NEWER
+		var gameObject = EditorUtility.EntityIdToObject(obj.GetEntityId()) as GameObject;
 #else
 		var gameObject = EditorUtility.InstanceIDToObject(obj.GetInstanceID()) as GameObject;
 #endif
@@ -34,7 +34,7 @@ public static class GitLocksAssetUtils
 		return GetAssetPathFromPrefabGameObject(gameObject);
 	}
 
-#if UNITY_6_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
 	public static string GetAssetPathFromPrefabGameObject(EntityId id)
 	{
 		var gameObject = EditorUtility.EntityIdToObject(id) as GameObject;
@@ -58,10 +58,10 @@ public static class GitLocksAssetUtils
 		return string.Empty;
 	}
 
-#if UNITY_6_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
 	public static bool IsObjectPrefabRoot(EntityId id)
 	{
-		var gameObject = EditorUtility.EntityIdToObject(entityId) as GameObject;
+		var gameObject = EditorUtility.EntityIdToObject(id) as GameObject;
 		return IsObjectPrefabRoot(gameObject);
 	}
 #else
@@ -82,7 +82,7 @@ public static class GitLocksAssetUtils
 		return false;
 	}
 
-#if UNITY_6_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
 	public static Scene GetSceneFromId(EntityId entityId)
 	{
 		for (int index = 0; index < SceneManager.sceneCount; index++)
@@ -112,7 +112,7 @@ public static class GitLocksAssetUtils
 	}
 #endif
 
-#if UNITY_6_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
 	public static List<string> SelectionToPaths()
 	{
 		List<string> paths = new List<string>();
@@ -130,7 +130,7 @@ public static class GitLocksAssetUtils
 			UnityEngine.Object obj = EditorUtility.EntityIdToObject(entityId);
 			if (obj != null)
 			{
-				string path = GitLocks.GetAssetPathFromPrefabGameObject(obj.GetEntityId());
+				string path = GitLocksAssetUtils.GetAssetPathFromPrefabGameObject(obj.GetEntityId());
 				paths.Add(path);
 			}
 			else if (_loadedScenesByHash.TryGetValue(EntityId.ToULong(entityId), out Scene scene))

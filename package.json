@@ -1,7 +1,7 @@
 {
   "name": "com.tomduchene.unity-git-locks",
   "displayName": "Git Locks",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "An editor tool to manipulate git LFS locks",
   "keywords": [
     "unity",
