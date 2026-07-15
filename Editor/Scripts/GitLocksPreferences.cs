@@ -67,6 +67,24 @@ public class GitLocksPreferences : SettingsProvider
             GUILayout.Space(5);
 
             EditorGUI.BeginChangeCheck();
+            string gitPath = EditorGUILayout.TextField(new GUIContent("Git binary path", "Absolute path to the git binary. Leave empty to use 'git' from PATH."), EditorPrefs.GetString("gitLocksGitPath", ""));
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorPrefs.SetString("gitLocksGitPath", gitPath);
+            }
+
+            GUILayout.Space(5);
+
+            EditorGUI.BeginChangeCheck();
+            string gitLfsPath = EditorGUILayout.TextField(new GUIContent("Git LFS binary path", "Absolute path to the git-lfs binary. Leave empty to use 'git-lfs' from PATH."), EditorPrefs.GetString("gitLocksGitLfsPath", ""));
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorPrefs.SetString("gitLocksGitLfsPath", gitLfsPath);
+            }
+
+            GUILayout.Space(5);
+
+            EditorGUI.BeginChangeCheck();
             int maxFilesNumPerRequest = EditorGUILayout.IntField(new GUIContent("Max number of files grouped per request"), EditorPrefs.GetInt("gitLocksMaxFilesNumPerRequest"));
             if (EditorGUI.EndChangeCheck())
             {
@@ -230,13 +248,13 @@ public class GitLocksPreferences : SettingsProvider
             EditorGUILayout.LabelField(new GUIContent("Your git version seems outdated (2.30.0 minimum), you may need to update it and then setup the Credentials Manager for the authentication to work properly"), EditorStyles.wordWrappedLabel);
             if (GUILayout.Button("Update Git for Windows"))
             {
-                GitLocks.ExecuteProcessTerminal("git", "update-git-for-windows", true);
+                GitLocks.ExecuteProcessTerminal(GitLocks.GetGitPath(), "update-git-for-windows", true);
             }
         }
 
         if (GUILayout.Button("Setup credentials manager (when using HTTPS)"))
         {
-            GitLocks.ExecuteProcessTerminalWithConsole("git", "config --local credential.helper manager");
+            GitLocks.ExecuteProcessTerminalWithConsole(GitLocks.GetGitPath(), "config --local credential.helper manager");
         }
 
         EditorGUI.indentLevel--;

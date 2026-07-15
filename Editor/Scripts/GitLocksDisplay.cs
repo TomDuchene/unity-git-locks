@@ -540,7 +540,7 @@ public class GitLocksDisplay : EditorWindow
                 }
                 else
                 {
-                    GitLocks.ExecuteProcessTerminal("git", "log \"" + path + "\"", true);
+                    GitLocks.ExecuteProcessTerminal(GitLocks.GetGitPath(), "log \"" + path + "\"", true);
                 }
             }
         }

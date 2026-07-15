@@ -122,7 +122,7 @@ public class GitLocks : ScriptableObject
 
         // Get the locks asynchronously
         currentlyRefreshing = true;
-        ExecuteNonBlockingProcessTerminal("git", "lfs locks --json");
+        ExecuteNonBlockingProcessTerminal(GetGitLfsPath(), "locks --json");
     }
 
     public static void RefreshCallback(string result)
@@ -130,7 +130,7 @@ public class GitLocks : ScriptableObject
         // If empty result, start a simple git lfs locks (no json) to catch potential errors
         if (result == "[]")
         {
-            ExecuteNonBlockingProcessTerminal("git", "lfs locks");
+            ExecuteNonBlockingProcessTerminal(GetGitLfsPath(), "locks");
         }
 
         // Check that we're receiving what seems to be a JSON result
@@ -549,7 +549,7 @@ public class GitLocks : ScriptableObject
         // Send each request
         foreach (string pathsString in pathsStrings)
         {
-            ExecuteProcessTerminalWithConsole("git", "lfs lock " + pathsString);
+            ExecuteProcessTerminalWithConsole(GetGitLfsPath(), "lock " + pathsString);
         }
     }
 
@@ -585,7 +585,7 @@ public class GitLocks : ScriptableObject
         // Send each request
         foreach (string pathsString in pathsStrings)
         {
-            ExecuteProcessTerminalWithConsole("git", "lfs unlock " + pathsString + (force ? "--force" : string.Empty));
+            ExecuteProcessTerminalWithConsole(GetGitLfsPath(), "unlock " + pathsString + (force ? "--force" : string.Empty));
         }
     }
 
@@ -663,11 +663,23 @@ public class GitLocks : ScriptableObject
         return EditorPrefs.GetString("gitLocksHostUsername", string.Empty);
     }
 
+    public static string GetGitPath()
+    {
+        string path = EditorPrefs.GetString("gitLocksGitPath", "git");
+        return string.IsNullOrEmpty(path) ? "git" : path;
+    }
+
+    public static string GetGitLfsPath()
+    {
+        string path = EditorPrefs.GetString("gitLocksGitLfsPath", "git lfs");
+        return string.IsNullOrEmpty(path) ? "git lfs" : path;
+    }
+
     public static string GetGitVersion()
     {
         if (gitVersion == null || gitVersion == string.Empty)
         {
-            gitVersion = ExecuteProcessTerminalWithConsole("git", "--version");
+            gitVersion = ExecuteProcessTerminalWithConsole(GetGitPath(), "--version");
         }
 
         return gitVersion;
@@ -739,12 +751,12 @@ public class GitLocks : ScriptableObject
         char[] splitter = { '\n' };
 
         // Staged
-        string output = ExecuteProcessTerminal("git", "diff --name-only --staged");
+        string output = ExecuteProcessTerminal(GetGitPath(), "diff --name-only --staged");
         string[] lines = output.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
         List<string> filesCandidates = new List<string>(lines);
 
         // Not staged
-        output = ExecuteProcessTerminal("git", "diff --name-only");
+        output = ExecuteProcessTerminal(GetGitPath(), "diff --name-only");
         lines = output.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
         filesCandidates.AddRange(lines);
 
@@ -807,10 +819,10 @@ public class GitLocks : ScriptableObject
         foreach (string branch in branchesToCheck)
         {
             // Fetch
-            ExecuteProcessTerminal("git", "fetch origin " + branch);
+            ExecuteProcessTerminal(GetGitPath(), "fetch origin " + branch);
 
             // List all distant commits
-            string output = ExecuteProcessTerminal("git", "rev-list " + currentBranch + "..origin/" + branch);
+            string output = ExecuteProcessTerminal(GetGitPath(), "rev-list " + currentBranch + "..origin/" + branch);
             string[] lines = output.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
             List<string> commits = new List<string>(lines);
 
@@ -818,7 +830,7 @@ public class GitLocks : ScriptableObject
             foreach (string commit in commits)
             {
                 // Add all files in commit to the list
-                string filesOutput = ExecuteProcessTerminal("git", "diff-tree --no-commit-id --name-only -r " + commit.Replace("\r", ""));
+                string filesOutput = ExecuteProcessTerminal(GetGitPath(), "diff-tree --no-commit-id --name-only -r " + commit.Replace("\r", ""));
                 string[] files = filesOutput.Split(splitter, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string file in files)
@@ -856,7 +868,7 @@ public class GitLocks : ScriptableObject
     public static string GetCurrentBranch()
     {
         char[] splitter = { '\n' };
-        string currentBranch = ExecuteProcessTerminal("git", "rev-parse --abbrev-ref HEAD");
+        string currentBranch = ExecuteProcessTerminal(GetGitPath(), "rev-parse --abbrev-ref HEAD");
         currentBranch = currentBranch.Split(splitter)[0].Replace("\r", "");
         return currentBranch;
     }
@@ -889,7 +901,7 @@ public class GitLocks : ScriptableObject
             if (!EditorUtility.DisplayDialog("Git Lfs Locks Error", "Git lfs locks error :\n\n" + refreshCallbackError + "\n\nIf it's your first time using the tool, you should probably setup the credentials manager", "OK", "Setup credentials"))
             {
                 DebugLog("Setup credentials manager");
-                ExecuteProcessTerminalWithConsole("git", "config --global credential.helper manager");
+                ExecuteProcessTerminalWithConsole(GetGitPath(), "config --global credential.helper manager");
             }
 
             refreshCallbackError = null;
