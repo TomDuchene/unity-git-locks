@@ -4,10 +4,9 @@ using System;
 using System.Runtime.Serialization;
 using UnityEditor;
 
-[System.Serializable]
 public class GitLocksObject
 {
-    public int id { get; set; }
+    public string id { get; set; }
 
     public string path { get; set; }
 
@@ -59,5 +58,5 @@ public class GitLocksObject
 
 public class LockedObjectOwner
 {
-    public string name;
+    public string name { get; set; }
 }

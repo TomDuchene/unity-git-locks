@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -244,8 +245,20 @@ public class GitLocks : ScriptableObject
         {
             Process p = new Process();
             ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "cmd.exe";
-            psi.Arguments = "/k " + processName + " " + processArguments;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                psi.FileName = "cmd.exe";
+                psi.Arguments = "/k " + processName + " " + processArguments;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                psi.FileName = processName;
+                psi.Arguments = processArguments;
+                psi.UseShellExecute = false;
+            }
+
+            
             p.StartInfo = psi;
             p.Start();
 
@@ -395,9 +408,7 @@ public class GitLocks : ScriptableObject
 
     public static List<GitLocksObject> ParseJsonIntoLockedObjects(string jsonString)
     {
-        JArray o = JArray.Parse(jsonString);
-        List<GitLocksObject> llo = Newtonsoft.Json.JsonConvert.DeserializeObject<List<GitLocksObject>>(jsonString);
-        return llo;
+        return JsonSerializer.Deserialize<List<GitLocksObject>>(jsonString);
     }
 
     public static bool IsObjectAvailableToUnlock(UnityEngine.Object obj)
